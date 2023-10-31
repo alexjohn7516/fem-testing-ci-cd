@@ -10,6 +10,11 @@ jobs:
   unit-test:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/cache@v3
+        id: 'npm-cache'
+        with:
+          path: ~/.npm
+          key: npm-${{hashFiles('**/package-lock.json')}}
       - uses: actions/checkout@v3
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -19,8 +24,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        id: 'npm-cache'
+        with:
+          path: ~/.npm
+          key: npm-${{hashFiles('**/package-lock.json')}}
+      - name: Checkouts Branch
+        uses: actions/checkout@v3
       - name: Setup Node
         uses: actions/setup-node@v3
-      - run: npm ci
-      - run: npm run build
+      - name: Installs npm modules
+        run: npm ci
+      - name: Runs Build
+        run: npm run build
